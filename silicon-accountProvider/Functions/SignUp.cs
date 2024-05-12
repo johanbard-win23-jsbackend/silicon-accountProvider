@@ -32,9 +32,10 @@ namespace silicon_accountProvider.Functions
             if (body != null)
             {
                 UserRegistrationRequest urr = null!;
+
                 try
                 {
-                    urr = JsonConvert.DeserializeObject<UserRegistrationRequest>(body);
+                    urr = JsonConvert.DeserializeObject<UserRegistrationRequest>(body)!;
                 }
                 catch (Exception ex)
                 {
@@ -51,6 +52,7 @@ namespace silicon_accountProvider.Functions
                             LastName = urr.LastName,
                             Email = urr.Email,
                             UserName = urr.Email,
+                            RegistrationDate = DateTime.Now
                         };
 
                         try
