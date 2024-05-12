@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace silicon_accountProvider.Models;
+﻿namespace silicon_accountProvider.Models;
 
 public class UserRegistrationRequest
 {

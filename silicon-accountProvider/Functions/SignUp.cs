@@ -18,10 +18,29 @@ namespace silicon_accountProvider.Functions
         [Function("SignUp")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
-            var body = await new StreamReader(req.Body).ReadToEndAsync();
+            string body = null!;
+
+            try
+            {
+                body = await new StreamReader(req.Body).ReadToEndAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"StreamReader :: {ex.Message}");
+            }
+            
             if (body != null)
             {
-                var urr = JsonConvert.DeserializeObject<UserRegistrationRequest>(body);
+                UserRegistrationRequest urr = null!;
+                try
+                {
+                    urr = JsonConvert.DeserializeObject<UserRegistrationRequest>(body);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"JsonConvert.DeserializeObject<UserRegistrationRequest>(body) :: {ex.Message}");
+                }
+                
                 if (urr != null && !string.IsNullOrEmpty(urr.Email) && !string.IsNullOrEmpty(urr.Password))
                 {
                     if (! await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
@@ -34,11 +53,18 @@ namespace silicon_accountProvider.Functions
                             UserName = urr.Email,
                         };
 
-                        var result = await _userManager.CreateAsync(userEntity, urr.Password);
-                        if (result.Succeeded) 
+                        try
                         {
-                            return new OkResult();
+                            var result = await _userManager.CreateAsync(userEntity, urr.Password);
+                            if (result.Succeeded)
+                            {
+                                return new OkResult();
+                            }
                         }
+                        catch (Exception ex) 
+                        {
+                            _logger.LogError($"_userManager.CreateAsync :: {ex.Message}");
+                        }                   
                     }
                     else
                     {
