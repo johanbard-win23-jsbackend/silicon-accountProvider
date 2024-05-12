@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "silicon_accountProvider": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7295",
+      "launchBrowser": false
+    }
+  }
+}
