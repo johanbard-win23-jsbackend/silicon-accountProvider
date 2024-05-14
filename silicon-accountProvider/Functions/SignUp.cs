@@ -62,6 +62,10 @@ namespace silicon_accountProvider.Functions
                             {
                                 return new OkResult();
                             }
+                            else
+                            {
+                                _logger.LogError($"_userManager.CreateAsync :: ERROR CREATING USER {userEntity.Email}");
+                            }
                         }
                         catch (Exception ex) 
                         {
