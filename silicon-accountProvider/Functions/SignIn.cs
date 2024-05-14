@@ -1,8 +1,8 @@
 ﻿using Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
@@ -15,7 +15,7 @@ namespace silicon_accountProvider.Functions
         private readonly SignInManager<UserEntity> _signInManager = signInManager;
 
         [Function("SignIn")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
         {
             string body = null!;
             try
@@ -47,8 +47,6 @@ namespace silicon_accountProvider.Functions
                         var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
                         if (result.Succeeded) 
                         {
-                            
-
                             return new OkResult();
                         }
                         else
