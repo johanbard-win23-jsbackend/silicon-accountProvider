@@ -1,8 +1,10 @@
 ﻿using Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
@@ -13,10 +15,12 @@ namespace silicon_accountProvider.Functions
     {
         private readonly ILogger _logger = logger;
         private readonly SignInManager<UserEntity> _signInManager = signInManager;
+        
 
-        [Function("SignIn")]
+    [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
+            _signInManager.Context = new DefaultHttpContext(); //THIS MIGHT DO IT
             string body = null!;
             try
             {
