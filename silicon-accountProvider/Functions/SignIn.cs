@@ -11,7 +11,7 @@ using silicon_accountProvider.Models;
 
 namespace silicon_accountProvider.Functions
 {
-    public class SignIn(ILogger<SignUp> logger, SignInManager<UserEntity> signInManager)
+    public class SignIn(ILogger<Create> logger, SignInManager<UserEntity> signInManager)
     {
         private readonly ILogger _logger = logger;
         private readonly SignInManager<UserEntity> _signInManager = signInManager;

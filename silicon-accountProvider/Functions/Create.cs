@@ -10,12 +10,12 @@ using silicon_accountProvider.Models;
 
 namespace silicon_accountProvider.Functions
 {
-    public class SignUp(ILogger<SignUp> logger, UserManager<UserEntity> userManager)
+    public class Create(ILogger<Create> logger, UserManager<UserEntity> userManager)
     {
         private readonly ILogger _logger = logger;
         private readonly UserManager<UserEntity> _userManager = userManager;
 
-        [Function("SignUp")]
+        [Function("Create")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
             string body = null!;

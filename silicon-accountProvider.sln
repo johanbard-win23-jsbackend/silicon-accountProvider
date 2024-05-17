@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "silicon-accountProvider", "silicon-accountProvider\silicon-accountProvider.csproj", "{148C693E-6CC1-4BA5-9FCE-DBA0A2C4F0FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "silicon-accountProvider", "silicon-accountProvider\silicon-accountProvider.csproj", "{148C693E-6CC1-4BA5-9FCE-DBA0A2C4F0FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{CBC6F007-9881-4796-BA73-D512FB3E92F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{CBC6F007-9881-4796-BA73-D512FB3E92F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
