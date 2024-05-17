@@ -15,12 +15,11 @@ namespace silicon_accountProvider.Functions
     {
         private readonly ILogger _logger = logger;
         private readonly SignInManager<UserEntity> _signInManager = signInManager;
-        
 
     [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
-            //_signInManager.Context = new DefaultHttpContext(); //MISSING SERVICE PROVIDER
+            //_signInManager.Context = new DefaultHttpContext {RequestServices = serviceProvider  }; //MISSING SERVICE PROVIDER
             string body = null!;
             try
             {
