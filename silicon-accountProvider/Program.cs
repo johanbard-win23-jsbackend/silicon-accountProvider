@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
@@ -28,5 +27,11 @@ var host = new HostBuilder()
         services.AddAuthorization();
     })
     .Build();
+
+using (var scope = host.Services.CreateScope())
+{
+    var signInManager = scope.ServiceProvider.GetService<SignInManager<UserEntity>>();
+    
+}
 
 host.Run();

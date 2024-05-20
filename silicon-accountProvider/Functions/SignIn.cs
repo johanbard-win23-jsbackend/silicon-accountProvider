@@ -11,10 +11,11 @@ using silicon_accountProvider.Models;
 
 namespace silicon_accountProvider.Functions
 {
-    public class SignIn(ILogger<Create> logger, IServiceProvider serviceProvider,SignInManager<UserEntity> signInManager)
+    public class SignIn(ILogger<Create> logger, IServiceProvider serviceProvider, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
     {
         private readonly ILogger<Create> _logger = logger;
-        private readonly IServiceProvider _serviceProvider = serviceProvider;
+        //private readonly IServiceProvider _serviceProvider = serviceProvider;
+        private readonly UserManager<UserEntity> _userManager = userManager;
         private readonly SignInManager<UserEntity> _signInManager = signInManager;
         //private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
 
@@ -47,21 +48,42 @@ namespace silicon_accountProvider.Functions
 
                 if (usir != null && !string.IsNullOrEmpty(usir.Email) && !string.IsNullOrEmpty(usir.Password))
                 {
+                    //
                     _logger.LogWarning($"SignInInfo :: {usir.Email}");
                     _logger.LogWarning($"SignInInfo :: {usir.Password}");
                     _logger.LogWarning($"SignInInfo :: {usir.RememberMe}");
+                    //
                     try
                     {
-                        var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
-                        if (result.Succeeded) 
+                        //var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
+
+                        var user = await _userManager.FindByNameAsync(usir.Email);
+                        if (user != null)
                         {
-                            return new OkResult();
+
+                            try
+                            {
+
+                                var result = await _signInManager.CheckPasswordSignInAsync(user, usir.Password, false);
+                                if (result.Succeeded)
+                                {
+                                    return new OkResult();
+                                }
+                                else
+                                {
+                                    return new UnauthorizedResult();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
+                            }
                         }
                         else
                         {
                             return new UnauthorizedResult();
                         }
-                    }
+                    }   
                     catch(Exception ex)
                     {
                         _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
