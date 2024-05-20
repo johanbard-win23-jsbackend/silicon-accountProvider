@@ -59,11 +59,10 @@ namespace silicon_accountProvider.Functions
                             if (result.Succeeded)
                             {
 
-                                await _userManager.SetAuthenticationTokenAsync(user, "accountProvider", "authToken", "ABC123");
+                                await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
                                 var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
                                 _logger.LogWarning($"TOKEN :: {token}");
 
-                                //string token = "ABC123";
                                 return new OkObjectResult(token);
                             }
                             else
