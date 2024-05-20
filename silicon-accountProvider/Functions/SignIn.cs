@@ -21,7 +21,7 @@ namespace silicon_accountProvider.Functions
         [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
-            _signInManager.Context = new DefaultHttpContext {RequestServices = serviceProvider }; //MISSING SERVICE PROVIDER
+            //_signInManager.Context = new DefaultHttpContext {RequestServices = _serviceProvider }; //MISSING SERVICE PROVIDER
             string body = null!;
             try
             {
