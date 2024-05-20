@@ -15,8 +15,8 @@ namespace silicon_accountProvider.Functions
     {
         private readonly ILogger<Create> _logger = logger;
         private readonly IServiceProvider _serviceProvider = serviceProvider;
-        private readonly SignInManager<UserEntity> _signInManager = signInManager;
-        //private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
+        //private readonly SignInManager<UserEntity> _signInManager = signInManager;
+        private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
 
         [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
