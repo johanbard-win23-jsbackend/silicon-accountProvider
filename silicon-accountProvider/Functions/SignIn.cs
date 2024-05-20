@@ -15,8 +15,8 @@ namespace silicon_accountProvider.Functions
     {
         private readonly ILogger<Create> _logger = logger;
         private readonly IServiceProvider _serviceProvider = serviceProvider;
-        //private readonly SignInManager<UserEntity> _signInManager = signInManager;
-        private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
+        private readonly SignInManager<UserEntity> _signInManager = signInManager;
+        //private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
 
         [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
@@ -47,7 +47,10 @@ namespace silicon_accountProvider.Functions
 
                 if (usir != null && !string.IsNullOrEmpty(usir.Email) && !string.IsNullOrEmpty(usir.Password))
                 {
-                   try
+                    _logger.LogWarning($"SignInInfo :: {usir.Email}");
+                    _logger.LogWarning($"SignInInfo :: {usir.Password}");
+                    _logger.LogWarning($"SignInInfo :: {usir.RememberMe}");
+                    try
                     {
                         var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
                         if (result.Succeeded) 

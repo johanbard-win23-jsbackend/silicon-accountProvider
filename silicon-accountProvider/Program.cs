@@ -12,7 +12,8 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         services.AddDbContext<DataContext>(x => x.UseSqlServer(context.Configuration.GetConnectionString("Azure")));
-        services.AddScoped<SignInManager<UserEntity>>();
+        //services.AddScoped<SignInManager<UserEntity>>();
+        services.AddSingleton<SignInManager<UserEntity>>();
 
         services.AddDefaultIdentity<UserEntity>(x =>
         {
