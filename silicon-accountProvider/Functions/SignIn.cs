@@ -1,14 +1,11 @@
 ﻿using Data.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
-using System.Runtime.CompilerServices;
 
 namespace silicon_accountProvider.Functions
 {
