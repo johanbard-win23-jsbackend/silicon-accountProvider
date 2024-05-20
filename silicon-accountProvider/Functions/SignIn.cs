@@ -8,21 +8,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
+using System.Runtime.CompilerServices;
 
 namespace silicon_accountProvider.Functions
 {
-    public class SignIn(ILogger<Create> logger, IServiceProvider serviceProvider, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
+    public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
     {
         private readonly ILogger<Create> _logger = logger;
-        //private readonly IServiceProvider _serviceProvider = serviceProvider;
         private readonly UserManager<UserEntity> _userManager = userManager;
         private readonly SignInManager<UserEntity> _signInManager = signInManager;
-        //private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
 
         [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
-            //_signInManager.Context = new DefaultHttpContext {RequestServices = _serviceProvider }; //MISSING SERVICE PROVIDER
             string body = null!;
             try
             {
@@ -48,11 +46,6 @@ namespace silicon_accountProvider.Functions
 
                 if (usir != null && !string.IsNullOrEmpty(usir.Email) && !string.IsNullOrEmpty(usir.Password))
                 {
-                    //
-                    _logger.LogWarning($"SignInInfo :: {usir.Email}");
-                    _logger.LogWarning($"SignInInfo :: {usir.Password}");
-                    _logger.LogWarning($"SignInInfo :: {usir.RememberMe}");
-                    //
                     try
                     {
                         //var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
@@ -60,14 +53,13 @@ namespace silicon_accountProvider.Functions
                         var user = await _userManager.FindByNameAsync(usir.Email);
                         if (user != null)
                         {
-
                             try
                             {
-
                                 var result = await _signInManager.CheckPasswordSignInAsync(user, usir.Password, false);
                                 if (result.Succeeded)
                                 {
-                                    return new OkResult();
+                                    string code = "ABC123";
+                                    return new OkObjectResult(code);
                                 }
                                 else
                                 {

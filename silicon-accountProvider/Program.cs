@@ -11,8 +11,6 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         services.AddDbContext<DataContext>(x => x.UseSqlServer(context.Configuration.GetConnectionString("Azure")));
-        //services.AddScoped<SignInManager<UserEntity>>();
-        //services.AddSingleton<SignInManager<UserEntity>>();
 
         services.AddDefaultIdentity<UserEntity>(x =>
         {
@@ -27,11 +25,5 @@ var host = new HostBuilder()
         services.AddAuthorization();
     })
     .Build();
-
-using (var scope = host.Services.CreateScope())
-{
-    var signInManager = scope.ServiceProvider.GetService<SignInManager<UserEntity>>();
-    
-}
 
 host.Run();
