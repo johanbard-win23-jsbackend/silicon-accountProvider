@@ -11,12 +11,14 @@ using silicon_accountProvider.Models;
 
 namespace silicon_accountProvider.Functions
 {
-    public class SignIn(ILogger<Create> logger, SignInManager<UserEntity> signInManager)
+    public class SignIn(ILogger<Create> logger, IServiceProvider serviceProvider,SignInManager<UserEntity> signInManager)
     {
-        private readonly ILogger _logger = logger;
-        private readonly SignInManager<UserEntity> _signInManager = signInManager;
+        private readonly ILogger<Create> _logger = logger;
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
+        //private readonly SignInManager<UserEntity> _signInManager = signInManager;
+        private readonly SignInManager<UserEntity> _signInManager = serviceProvider.GetRequiredService<SignInManager<UserEntity>>();
 
-    [Function("SignIn")]
+        [Function("SignIn")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
             //_signInManager.Context = new DefaultHttpContext {RequestServices = serviceProvider  }; //MISSING SERVICE PROVIDER
