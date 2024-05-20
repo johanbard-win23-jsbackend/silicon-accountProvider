@@ -58,8 +58,9 @@ namespace silicon_accountProvider.Functions
                                 var result = await _signInManager.CheckPasswordSignInAsync(user, usir.Password, false);
                                 if (result.Succeeded)
                                 {
-                                    string code = "ABC123";
-                                    return new OkObjectResult(code);
+                                    var token = await _userManager.GetAuthenticationTokenAsync(user, "accountProvider", "authToken");
+                                    //string code = "ABC123";
+                                    return new OkObjectResult(token);
                                 }
                                 else
                                 {
