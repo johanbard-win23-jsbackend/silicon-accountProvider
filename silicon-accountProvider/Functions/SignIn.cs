@@ -55,8 +55,11 @@ namespace silicon_accountProvider.Functions
                         try
                         {
                             var result = await _signInManager.CheckPasswordSignInAsync(user!, usir.Password, false);
+
                             if (result.Succeeded)
                             {
+
+                                await _userManager.SetAuthenticationTokenAsync(user, "accountProvider", "authToken", "ABC123");
                                 var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
                                 _logger.LogWarning($"TOKEN :: {token}");
 
