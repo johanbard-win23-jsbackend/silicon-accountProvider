@@ -51,30 +51,26 @@ namespace silicon_accountProvider.Functions
                         //var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
 
                         var user = await _userManager.FindByNameAsync(usir.Email);
-                        if (user != null)
+                        
+                        try
                         {
-                            try
+                            var result = await _signInManager.CheckPasswordSignInAsync(user!, usir.Password, false);
+                            if (result.Succeeded)
                             {
-                                var result = await _signInManager.CheckPasswordSignInAsync(user, usir.Password, false);
-                                if (result.Succeeded)
-                                {
-                                    var token = await _userManager.GetAuthenticationTokenAsync(user, "accountProvider", "authToken");
-                                    //string code = "ABC123";
-                                    return new OkObjectResult(token);
-                                }
-                                else
-                                {
-                                    return new UnauthorizedResult();
-                                }
+                                var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
+                                _logger.LogWarning($"TOKEN :: {token}");
+
+                                //string token = "ABC123";
+                                return new OkObjectResult(token);
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
+                                return new UnauthorizedResult();
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            return new UnauthorizedResult();
+                            _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
                         }
                     }   
                     catch(Exception ex)
