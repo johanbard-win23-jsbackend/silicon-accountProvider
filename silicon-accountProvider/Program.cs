@@ -1,8 +1,10 @@
 using Data.Contexts;
 using Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
@@ -10,6 +12,7 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         services.AddDbContext<DataContext>(x => x.UseSqlServer(context.Configuration.GetConnectionString("Azure")));
+        services.AddScoped<SignInManager<UserEntity>>();
 
         services.AddDefaultIdentity<UserEntity>(x =>
         {
