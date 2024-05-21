@@ -59,7 +59,7 @@ public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager,
                         {
                             try
                             {
-                                var token = await _userManager.GenerateUserTokenAsync(user!, "accountProvider", "Authorization");
+                                var token = await _userManager.GenerateUserTokenAsync(user!, "Microsoft", "Authorization");
 
                                 //await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
                                 //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
