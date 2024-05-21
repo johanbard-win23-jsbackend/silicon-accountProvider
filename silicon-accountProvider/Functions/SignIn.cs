@@ -6,80 +6,81 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
+using System.Security.Claims;
 
-namespace silicon_accountProvider.Functions
+namespace silicon_accountProvider.Functions;
+
+public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
 {
-    public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
-    {
-        private readonly ILogger<Create> _logger = logger;
-        private readonly UserManager<UserEntity> _userManager = userManager;
-        private readonly SignInManager<UserEntity> _signInManager = signInManager;
+    private readonly ILogger<Create> _logger = logger;
+    private readonly UserManager<UserEntity> _userManager = userManager;
+    private readonly SignInManager<UserEntity> _signInManager = signInManager;
 
-        [Function("SignIn")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+    [Function("SignIn")]
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+    {
+        string body = null!;
+        try
         {
-            string body = null!;
+            body = await new StreamReader(req.Body).ReadToEndAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"StreamReader :: {ex.Message}");
+        }
+
+        if (body != null)
+        {
+            UserSignInRequest usir = null!;
+
             try
             {
-                body = await new StreamReader(req.Body).ReadToEndAsync();
+                usir = JsonConvert.DeserializeObject<UserSignInRequest>(body)!;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"StreamReader :: {ex.Message}");
+                _logger.LogError($"JsonConvert.DeserializeObject<UserSignInRequest>(body) :: {ex.Message}");
             }
 
-            if (body != null)
+            if (usir != null && !string.IsNullOrEmpty(usir.Email) && !string.IsNullOrEmpty(usir.Password))
             {
-                UserSignInRequest usir = null!;
-
                 try
                 {
-                    usir = JsonConvert.DeserializeObject<UserSignInRequest>(body)!;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"JsonConvert.DeserializeObject<UserSignInRequest>(body) :: {ex.Message}");
-                }
+                    //var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
 
-                if (usir != null && !string.IsNullOrEmpty(usir.Email) && !string.IsNullOrEmpty(usir.Password))
-                {
+                    var user = await _userManager.FindByNameAsync(usir.Email);
+                    
                     try
                     {
-                        //var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
+                        var result = await _signInManager.CheckPasswordSignInAsync(user!, usir.Password, false);
 
-                        var user = await _userManager.FindByNameAsync(usir.Email);
-                        
-                        try
+                        if (result.Succeeded)
                         {
-                            var result = await _signInManager.CheckPasswordSignInAsync(user!, usir.Password, false);
+                            var token = _signInManager.SignInAsync(user!, usir.RememberMe);
 
-                            if (result.Succeeded)
-                            {
-
-                                await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
-                                var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
-                               
-                                return new OkObjectResult(token);
-                            }
-                            else
-                            {
-                                return new UnauthorizedResult();
-                            }
+                            //await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
+                            //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
+                           
+                            return new OkObjectResult(token);
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
+                            return new UnauthorizedResult();
                         }
-                    }   
-                    catch(Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
                     }
+                }   
+                catch(Exception ex)
+                {
+                    _logger.LogError($"_signInManager.PasswordSignInAsync :: {ex.Message}");
                 }
             }
-
-            return new BadRequestResult();
         }
+
+        return new BadRequestResult();
     }
 }
-    
+
