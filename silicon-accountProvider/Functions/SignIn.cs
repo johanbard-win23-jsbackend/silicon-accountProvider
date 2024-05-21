@@ -56,7 +56,7 @@ public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager,
 
                         if (result.Succeeded)
                         {
-                            var token = _signInManager.SignInAsync(user!, usir.RememberMe);
+                            var token = await _userManager.GenerateUserTokenAsync(user!, "accountProvider", "Authorization");
 
                             //await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
                             //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
