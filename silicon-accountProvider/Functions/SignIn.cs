@@ -6,6 +6,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace silicon_accountProvider.Functions;
@@ -49,19 +50,27 @@ public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager,
                     //var result = await _signInManager.PasswordSignInAsync(usir.Email, usir.Password, usir.RememberMe, false);
 
                     var user = await _userManager.FindByNameAsync(usir.Email);
-                    
+
                     try
                     {
                         var result = await _signInManager.CheckPasswordSignInAsync(user!, usir.Password, false);
 
                         if (result.Succeeded)
                         {
-                            var token = await _userManager.GenerateUserTokenAsync(user!, "accountProvider", "Authorization");
+                            try
+                            {
+                                var token = await _userManager.GenerateUserTokenAsync(user!, "accountProvider", "Authorization");
 
-                            //await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
-                            //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
-                           
-                            return new OkObjectResult(token);
+                                //await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
+                                //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
+
+                                return new OkObjectResult(token);
+                            }
+                            catch(Exception ex)
+                            {
+                                _logger.LogError($"_userManager.GenerateUserTokenAsync :: {ex.Message}");
+                            }
+                            
                         }
                         else
                         {
