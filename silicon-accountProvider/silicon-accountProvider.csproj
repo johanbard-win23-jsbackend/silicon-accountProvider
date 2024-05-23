@@ -8,9 +8,6 @@
     <RootNamespace>silicon_accountProvider</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="local.settings.json" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.4" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />
