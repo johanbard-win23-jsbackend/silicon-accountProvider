@@ -32,6 +32,7 @@ namespace silicon_accountProvider.Functions
             if (body != null)
             {
                 UserRegistrationRequest urr = null!;
+                _logger.LogWarning(body);
 
                 try
                 {
@@ -41,8 +42,8 @@ namespace silicon_accountProvider.Functions
                 {
                     _logger.LogError($"JsonConvert.DeserializeObject<UserRegistrationRequest>(body) :: {ex.Message}");
                 }
-                
-                if (urr != null && !string.IsNullOrEmpty(urr.Email) && !string.IsNullOrEmpty(urr.Password) && urr.Password == urr.ConfirmPassword && urr.Terms == true)
+
+                if (urr != null && urr.FirstName.Length > 2 && !string.IsNullOrEmpty(urr.Email) && !string.IsNullOrEmpty(urr.Password) && urr.Password == urr.ConfirmPassword && urr.Terms == true)
                 {
                     if (! await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
                     {
