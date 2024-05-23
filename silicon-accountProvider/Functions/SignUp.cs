@@ -94,7 +94,7 @@ namespace silicon_accountProvider.Functions
                     
                 }
             }
-
+            _logger.LogWarning("Sending Bad Request");
             return new BadRequestResult();
         }
     }
