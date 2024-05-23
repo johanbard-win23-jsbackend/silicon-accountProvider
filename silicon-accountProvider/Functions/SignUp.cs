@@ -18,6 +18,7 @@ namespace silicon_accountProvider.Functions
         [Function("SignUp")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
+            _logger.LogWarning("Started");
             string body = null!;
 
             try
@@ -32,7 +33,7 @@ namespace silicon_accountProvider.Functions
             if (body != null)
             {
                 UserRegistrationRequest urr = null!;
-                _logger.LogWarning(body);
+                _logger.LogWarning("There is a body");
 
                 try
                 {
@@ -43,40 +44,54 @@ namespace silicon_accountProvider.Functions
                     _logger.LogError($"JsonConvert.DeserializeObject<UserRegistrationRequest>(body) :: {ex.Message}");
                 }
 
+                _logger.LogWarning("Body deserialized to urr");
+
                 if (urr != null && urr.FirstName.Length > 2 && !string.IsNullOrEmpty(urr.Email) && !string.IsNullOrEmpty(urr.Password) && urr.Password == urr.ConfirmPassword && urr.Terms == true)
                 {
-                    if (! await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
+                    _logger.LogWarning("Finding other i DB");
+                    try
                     {
-                        var userEntity = new UserEntity
+                        if (!await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
                         {
-                            FirstName = urr.FirstName,
-                            LastName = urr.LastName,
-                            Email = urr.Email,
-                            UserName = urr.Email,
-                            RegistrationDate = DateTime.Now
-                        };
+                            _logger.LogWarning("No other i DB");
+                            var userEntity = new UserEntity
+                            {
+                                FirstName = urr.FirstName,
+                                LastName = urr.LastName,
+                                Email = urr.Email,
+                                UserName = urr.Email,
+                                RegistrationDate = DateTime.Now
+                            };
 
-                        try
-                        {
-                            var result = await _userManager.CreateAsync(userEntity, urr.Password);
-                            if (result.Succeeded)
+                            try
                             {
-                                return new OkResult();
+                                _logger.LogWarning("Creating in DB");
+                                var result = await _userManager.CreateAsync(userEntity, urr.Password);
+                                if (result.Succeeded)
+                                {
+                                    _logger.LogWarning("Sending OK Result");
+                                    return new OkResult();
+                                }
+                                else
+                                {
+                                    _logger.LogError($"_userManager.CreateAsync :: ERROR CREATING USER {userEntity.Email}");
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                _logger.LogError($"_userManager.CreateAsync :: ERROR CREATING USER {userEntity.Email}");
+                                _logger.LogError($"_userManager.CreateAsync :: {ex.Message}");
                             }
                         }
-                        catch (Exception ex) 
+                        else
                         {
-                            _logger.LogError($"_userManager.CreateAsync :: {ex.Message}");
-                        }                   
+                            return new ConflictResult();
+                        }
                     }
-                    else
+                    catch(Exception ex)
                     {
-                        return new ConflictResult();
+                        _logger.LogError($"_userManager.Users.AnyAsync :: {ex.Message}");
                     }
+                    
                 }
             }
 
