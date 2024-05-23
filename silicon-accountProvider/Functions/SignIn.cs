@@ -101,9 +101,7 @@ public class SignIn(ILogger<SignUp> logger, UserManager<UserEntity> userManager,
                                     {
                                         _logger.LogError("Unsuccessful response from tokenProvider");
                                     }
-                                }
-
-                                
+                                } 
                             }
                             catch(Exception ex)
                             {
