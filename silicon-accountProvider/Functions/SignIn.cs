@@ -6,8 +6,9 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
-using System.Globalization;
-using System.Security.Claims;
+using System;
+using System.Net.Mime;
+using System.Text;
 
 namespace silicon_accountProvider.Functions;
 
@@ -59,10 +60,50 @@ public class SignIn(ILogger<SignUp> logger, UserManager<UserEntity> userManager,
                         {
                             try
                             {
-                                await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
-                                var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
+                                using (var client = new HttpClient())
+                                {
+                                    string url = Environment.GetEnvironmentVariable("tokenProviderUrl")!;
+                                    var obj = new {
+                                        UserId=user!.Id,
+	                                    Email=user.Email
+                                    };
 
-                                return new OkObjectResult(token);
+                                    var jsonOut = JsonConvert.SerializeObject(obj);
+
+                                    var request = new HttpRequestMessage
+                                    {
+                                        Method = HttpMethod.Post,
+                                        RequestUri = new Uri(url),
+                                        Content = new StringContent(
+                                        jsonOut,
+                                        Encoding.UTF8,
+                                        MediaTypeNames.Application.Json), // or "application/json" in older versions
+                                    };
+
+                                    var response = await client.SendAsync(request);
+
+                                    if (response.IsSuccessStatusCode)
+                                    {
+                                        var json = await response.Content.ReadAsStringAsync();
+                                        var tokens = JsonConvert.DeserializeObject<TokenResponse>(json);
+
+                                        if(tokens != null && tokens.refreshToken != null) 
+                                        {
+                                            await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", tokens.refreshToken);
+                                            //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
+
+                                            return new OkObjectResult(json);
+                                        }
+
+                                        _logger.LogError($"Failed to recieve token");
+                                    }
+                                    else
+                                    {
+                                        _logger.LogError("Unsuccessful response from tokenProvider");
+                                    }
+                                }
+
+                                
                             }
                             catch(Exception ex)
                             {
