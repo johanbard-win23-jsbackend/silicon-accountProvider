@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace silicon_accountProvider.Functions;
 
-public class SignOut(ILogger<Create> logger, SignInManager<UserEntity> signInManager)
+public class SignOut(ILogger<SignUp> logger, SignInManager<UserEntity> signInManager)
 {
     private readonly ILogger _logger = logger;
     private readonly SignInManager<UserEntity> _signInManager = signInManager;

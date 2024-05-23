@@ -10,12 +10,12 @@ using silicon_accountProvider.Models;
 
 namespace silicon_accountProvider.Functions
 {
-    public class Create(ILogger<Create> logger, UserManager<UserEntity> userManager)
+    public class SignUp(ILogger<SignUp> logger, UserManager<UserEntity> userManager)
     {
         private readonly ILogger _logger = logger;
         private readonly UserManager<UserEntity> _userManager = userManager;
 
-        [Function("Create")]
+        [Function("SignUp")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
             string body = null!;
@@ -42,7 +42,7 @@ namespace silicon_accountProvider.Functions
                     _logger.LogError($"JsonConvert.DeserializeObject<UserRegistrationRequest>(body) :: {ex.Message}");
                 }
                 
-                if (urr != null && !string.IsNullOrEmpty(urr.Email) && !string.IsNullOrEmpty(urr.Password))
+                if (urr != null && !string.IsNullOrEmpty(urr.Email) && !string.IsNullOrEmpty(urr.Password) && urr.Password == urr.ConfirmPassword && urr.Terms == true)
                 {
                     if (! await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
                     {

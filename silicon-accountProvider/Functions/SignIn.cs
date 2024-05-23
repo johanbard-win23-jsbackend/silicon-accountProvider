@@ -11,9 +11,9 @@ using System.Security.Claims;
 
 namespace silicon_accountProvider.Functions;
 
-public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
+public class SignIn(ILogger<SignUp> logger, UserManager<UserEntity> userManager, SignInManager<UserEntity> signInManager)
 {
-    private readonly ILogger<Create> _logger = logger;
+    private readonly ILogger<SignUp> _logger = logger;
     private readonly UserManager<UserEntity> _userManager = userManager;
     private readonly SignInManager<UserEntity> _signInManager = signInManager;
 
@@ -59,10 +59,8 @@ public class SignIn(ILogger<Create> logger, UserManager<UserEntity> userManager,
                         {
                             try
                             {
-                                var token = await _userManager.GenerateUserTokenAsync(user!, "Microsoft", "Authorization");
-
-                                //await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
-                                //var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
+                                await _userManager.SetAuthenticationTokenAsync(user!, "accountProvider", "authToken", "ABC123");
+                                var token = await _userManager.GetAuthenticationTokenAsync(user!, "accountProvider", "authToken");
 
                                 return new OkObjectResult(token);
                             }
