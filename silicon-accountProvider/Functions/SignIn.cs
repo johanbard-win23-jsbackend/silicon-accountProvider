@@ -6,7 +6,6 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
-using System;
 using System.Net.Mime;
 using System.Text;
 
