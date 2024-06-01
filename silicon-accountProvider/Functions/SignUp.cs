@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using silicon_accountProvider.Models;
+using System.Text;
 
 namespace silicon_accountProvider.Functions
 {
@@ -54,10 +55,24 @@ namespace silicon_accountProvider.Functions
                         if (!await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
                         {
                             _logger.LogWarning("No other i DB");
+
                             var subscriberEntity = new SubscriberEntity
                             {
                                 Email = urr.Email,
+                                isActive = true,
                             };
+
+                            using (var client = new HttpClient())
+                            {
+                                client.BaseAddress = new Uri("");
+
+                                var json = JsonConvert.SerializeObject(subscriberEntity);
+                                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                                var result = await client.PostAsync("http://localhost:7239/api/CreateSubscriber", content);
+                                string resultContent = await result.Content.ReadAsStringAsync();
+                                subscriberEntity = JsonConvert.DeserializeObject<SubscriberEntity>(resultContent);
+                            }
 
                             var userEntity = new UserEntity
                             {
