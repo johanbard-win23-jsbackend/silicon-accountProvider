@@ -1,4 +1,4 @@
-﻿namespace silicon_accountProvider.Models;
+﻿namespace Data.Models;
 
 public class UserRegistrationRequest
 {

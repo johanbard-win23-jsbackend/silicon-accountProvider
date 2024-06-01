@@ -6,7 +6,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using silicon_accountProvider.Models;
+using Data.Models;
 using System.Text;
 
 namespace silicon_accountProvider.Functions

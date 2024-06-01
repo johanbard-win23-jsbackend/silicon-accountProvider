@@ -1,5 +1,6 @@
 using Data.Contexts;
 using Data.Entities;
+using Data.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,8 @@ var host = new HostBuilder()
             x.User.RequireUniqueEmail = true;
             //x.Password.RequiredLength = 8;
         }).AddEntityFrameworkStores<DataContext>();
+
+        services.AddScoped<IAccountService, AccountService>();
 
         services.AddAuthentication();
         services.AddAuthorization();

@@ -1,65 +1,49 @@
 using Data.Entities;
+using Data.Models;
+using Data.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using silicon_accountProvider.Models;
 
 namespace silicon_accountProvider.Functions;
 
-public class Delete(ILogger<Delete> logger, UserManager<UserEntity> userManager)
+public class Delete(ILogger<Delete> logger, IAccountService accountService)
 {
     private readonly ILogger _logger = logger;
-    private readonly UserManager<UserEntity> _userManager = userManager;
+    private readonly IAccountService _accountService = accountService;
+
 
     [Function("Delete")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
-        string body = null!;
-        
-
         try
         {
-            body = await new StreamReader(req.Body).ReadToEndAsync();
+            var body = await new StreamReader(req.Body).ReadToEndAsync();
+            var delReq = JsonConvert.DeserializeObject<DeleteRequest>(body);
+
+            if (delReq == null)
+                return new BadRequestObjectResult(new { Error = "Please provide a valid request" });
+
+            var res = await _accountService.DeleteAccountAsync(delReq);
+
+            switch (res.Status)
+            {
+                case "200":
+                    return new OkResult();
+                case "400":
+                    return new BadRequestObjectResult(new { Error = $"Function Delete failed :: {res.Error}" });
+                case "500":
+                    return new ObjectResult(new { Error = $"Function Delete failed :: {res.Error}" }) { StatusCode = 500 };
+                default:
+                    return new ObjectResult(new { Error = $"Function Delete failed :: Unknown Error" }) { StatusCode = 500 };
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError($"StreamReader :: {ex.Message}");
+            return new ObjectResult(new { Error = $"Function Delete failed :: {ex.Message}" }) { StatusCode = 500 };
         }
-
-        if (body != null)
-        {
-            UserEntity user;
-
-            try
-            {
-                user = JsonConvert.DeserializeObject<UserEntity>(body)!;
-
-                if (user != null)
-                {
-                    try
-                    {
-                        var res = await _userManager.DeleteAsync(user);
-                        if (res.Succeeded)
-                        {
-                            return new OkResult();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"_userManager.DeleteAsync(user) :: {ex.Message}");
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"JsonConvert.DeserializeObject<UserEntity>(body) :: {ex.Message}");
-            }
-        }
-
-        return new BadRequestResult();
     }
 }
