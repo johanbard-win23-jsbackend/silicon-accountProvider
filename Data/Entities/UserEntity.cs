@@ -27,10 +27,12 @@ public class UserEntity : IdentityUser
     [Column(TypeName = "datetime")]
     public DateTime RegistrationDate { get; set; }
 
-    public string? SubscriberId { get; set; }
+    [ForeignKey(nameof(Subscriber))]
+    public int? SubscriberId { get; set; }
 
     [ForeignKey(nameof(Address))]
     public int? AddressId { get; set; }
 
+    public virtual SubscriberEntity? Subscriber { get; set; }
     public virtual AddressEntity? Address { get; set; }
 }

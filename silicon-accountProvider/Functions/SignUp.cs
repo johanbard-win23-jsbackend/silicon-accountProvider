@@ -54,13 +54,19 @@ namespace silicon_accountProvider.Functions
                         if (!await _userManager.Users.AnyAsync(x => x.Email == urr.Email))
                         {
                             _logger.LogWarning("No other i DB");
+                            var subscriberEntity = new SubscriberEntity
+                            {
+                                Email = urr.Email,
+                            };
+
                             var userEntity = new UserEntity
                             {
                                 FirstName = urr.FirstName,
                                 LastName = urr.LastName,
                                 Email = urr.Email,
                                 UserName = urr.Email,
-                                RegistrationDate = DateTime.Now
+                                RegistrationDate = DateTime.Now,
+                                Subscriber = subscriberEntity
                             };
 
                             try

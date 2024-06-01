@@ -44,7 +44,27 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("Data.Entities.SubscriberEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscribers");
                 });
 
             modelBuilder.Entity("Data.Entities.UserEntity", b =>
@@ -116,8 +136,8 @@ namespace Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SubscriberId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("SubscriberId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -139,6 +159,8 @@ namespace Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("SubscriberId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -282,7 +304,13 @@ namespace Data.Migrations
                         .WithOne("User")
                         .HasForeignKey("Data.Entities.UserEntity", "AddressId");
 
+                    b.HasOne("Data.Entities.SubscriberEntity", "Subscriber")
+                        .WithMany()
+                        .HasForeignKey("SubscriberId");
+
                     b.Navigation("Address");
+
+                    b.Navigation("Subscriber");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
