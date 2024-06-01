@@ -59,31 +59,36 @@ namespace silicon_accountProvider.Functions
                             var subscriberEntity = new SubscriberEntity
                             {
                                 Email = urr.Email,
-                                isActive = true,
                             };
 
                             using (var client = new HttpClient())
                             {
-                                client.BaseAddress = new Uri("");
+                                //client.BaseAddress = new Uri("");
 
                                 var json = JsonConvert.SerializeObject(subscriberEntity);
                                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                                 var result = await client.PostAsync("http://localhost:7239/api/CreateSubscriber", content);
+                                if (!result.IsSuccessStatusCode) { return new ObjectResult(result); }
                                 string resultContent = await result.Content.ReadAsStringAsync();
                                 subscriberEntity = JsonConvert.DeserializeObject<SubscriberEntity>(resultContent);
                             }
 
-                            var userEntity = new UserEntity
-                            {
-                                FirstName = urr.FirstName,
-                                LastName = urr.LastName,
-                                Email = urr.Email,
-                                UserName = urr.Email,
-                                RegistrationDate = DateTime.Now,
-                                Subscriber = subscriberEntity
-                            };
+                            var userEntity = new UserEntity();
 
+                            if (subscriberEntity != null)
+                            {
+                                userEntity = new UserEntity
+                                {
+                                    FirstName = urr.FirstName,
+                                    LastName = urr.LastName,
+                                    Email = urr.Email,
+                                    UserName = urr.Email,
+                                    RegistrationDate = DateTime.Now,
+                                    SubscriberId = subscriberEntity.Id
+                                };
+                            }
+                            
                             try
                             {
                                 _logger.LogWarning("Creating in DB");
