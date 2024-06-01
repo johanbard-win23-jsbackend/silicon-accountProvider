@@ -68,7 +68,7 @@ namespace silicon_accountProvider.Functions
                                 var json = JsonConvert.SerializeObject(subscriberEntity);
                                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                                var result = await client.PostAsync("http://localhost:7239/api/CreateSubscriber", content);
+                                var result = await client.PostAsync("https://jb-silicon-subscriberprovider.azurewebsites.net/api/CreateSubscriber?code=v3HS2OrfLumU4Kc-c3aApsTnVbILhI_2_HFMuUcETIfSAzFuAwZ0sQ%3D%3D", content);
                                 if (!result.IsSuccessStatusCode) { return new ObjectResult(result); }
                                 string resultContent = await result.Content.ReadAsStringAsync();
                                 subscriberEntity = JsonConvert.DeserializeObject<SubscriberEntity>(resultContent);
