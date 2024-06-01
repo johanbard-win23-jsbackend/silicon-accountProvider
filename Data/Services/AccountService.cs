@@ -2,6 +2,7 @@
 using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Data.Services;
 
@@ -44,7 +45,7 @@ public class AccountService(UserManager<UserEntity> userManager) : IAccountServi
     {
         try
         {
-            if (upReq != null && !upReq.Id.IsNullOrEmpty() && !upReq.OldPassword.IsNullOrEmpty() && !upReq.NewPassword.IsNullOrEmpty() && !upReq.ConfirmPassword.IsNullOrEmpty() && upReq.NewPassword == upReq.OldPassword)
+            if (upReq != null && !upReq.Id.IsNullOrEmpty() && !upReq.OldPassword.IsNullOrEmpty() && !upReq.NewPassword.IsNullOrEmpty() && !upReq.ConfirmPassword.IsNullOrEmpty() && upReq.NewPassword == upReq.ConfirmPassword)
             {
                 var user = await _userManager.FindByIdAsync(upReq.Id);
                 if (user != null)
@@ -53,6 +54,10 @@ public class AccountService(UserManager<UserEntity> userManager) : IAccountServi
                     if (res.Succeeded)
                     {
                         return new UpdatePasswordResponse { Status = "200" };
+                    }
+                    else
+                    {
+                        return new UpdatePasswordResponse { Status = "400", Error = JsonConvert.SerializeObject(res.Errors) };
                     }
                 }
             }
